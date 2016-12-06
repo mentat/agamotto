@@ -46,6 +46,7 @@ type ElectionOperator string
 const (
 	Lowest  ElectionOperator = "lowest"  // The lowest value
 	Highest ElectionOperator = "highest" // The highest value
+	Random  ElectionOperator = "random"  // Pick a random value
 )
 
 // ElectionHeuristic - a simple heuristic for choosing a new leader.
@@ -74,7 +75,8 @@ type Cluster struct {
 	CorrectiveAction Correction
 	ControlNodes     []Node
 	DataNodes        []Node
-	DataNodeCount    int    // The number of data nodes to maintain in the cluster.
+	DataNodeCount    int // The number of data nodes to maintain in the cluster.
+	Election         ElectionHeuristic
 	Callback         string // An HTTP callback to fire when an action is need, optional.
 }
 
@@ -96,10 +98,12 @@ type Operation struct {
 	ID          uint
 	StartedAt   time.Time
 	CompletedAt time.Time
+	ConfirmedAt time.Time
 	Status      OperationStatus
 	WasSuccess  bool
 	Error       string
 	Action      *Action
 	Cluster     *Cluster
 	RetryCount  int
+	Confirmed   bool // Vision has confirmed the operation success.
 }
